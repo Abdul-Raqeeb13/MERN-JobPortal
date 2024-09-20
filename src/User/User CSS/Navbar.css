@@ -1,0 +1,103 @@
+/* Navbar Styles */
+.navbar-brand {
+    color: white !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.custom-navbar {
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,121,182,1) 50%, rgba(0,212,255,1) 100%);
+    padding: 1rem 2rem;
+}
+
+.nav-link {
+    color: white !important;
+    font-size: 1.2rem;
+    position: relative;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    transition: color 0.6s ease, transform 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #a9a8a8 !important;
+    transform: scale(1.05);
+}
+
+/* Active Link */
+.nav-link.active {
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+/* Underline effect on hover */
+.nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    width: 0;
+    height: 2px;
+    background-color: #fff;
+    transition: width 0.6s ease;
+}
+
+.nav-link:hover::after {
+    width: 90%;
+}
+
+.navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
+    color: #171717 !important;
+}
+
+/* Modal Styles */
+.custom-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.custom-modal-input {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.custom-modal-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.custom-modal-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.custom-modal-btn:active {
+    background-color: #004494;
+}
+
+.custom-alert-message {
+    color: red;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Profile Image Styles */
+.profileImg {
+    width: 5vw;
+    cursor: pointer;
+}
+
+.profileImg img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
