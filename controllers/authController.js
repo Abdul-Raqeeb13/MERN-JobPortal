@@ -31,11 +31,10 @@ exports.signup = async (req, res) => {
                 const hashPassword = await bcrypt.hash(password , 12)
                 req.body.password = hashPassword
 
-                console.log(req.body);
-                
+
                 const data = await createUser(req.body)
 
-                res.status(200).send({
+                 return res.status(200).send({
                         message: 'Signup successful!',
                         user: value // Assuming 'value' contains validated user data
                       });
@@ -55,59 +54,92 @@ exports.signup = async (req, res) => {
 } 
 
 
-exports.login = async (req, res) => {
+// exports.login = async (req, res) => {
 
-    // try {
-        const {error , value} = loginValidator.validate(req.body);
-        if (error) {
-            res.status(400).send({
-                message: error.details[0].message
-              });
-        }
+//     // try {
+//         const {error , value} = loginValidator.validate(req.body);
+//         if (error) {
+//             res.status(400).send({
+//                 message: error.details[0].message
+//               });
+//         }
 
-        else{  
-            const {email , password} = req.body
-            const findUserData = await findUser({email:email})
+//         else{  
+//             const {email , password} = req.body
+//             const findUserData = await findUser({email:email})
             
-            if(findUserData){
-                const checkPassword = await bcrypt.compare(password, findUserData.password)
-                console.log(checkPassword);
-                if(checkPassword){
-                    // console.log(findUserData._id);
-                    // console.log(process.env.SECRET_KEY);
+//             if(findUserData){
+//                 const checkPassword = await bcrypt.compare(password, findUserData.password)
+//                 console.log(checkPassword);
+//                 if(checkPassword){
+//                     // console.log(findUserData._id);
+//                     // console.log(process.env.SECRET_KEY);
                     
-                    const token = JWT.sign({_id : findUserData._id}, process.env.SECRET_KEY, {expiresIn : '2h'})
-                    res.send({
-                        message:"Login Success",
-                        data:findUserData,
-                        token
-                    })
+//                     const token = JWT.sign({_id : findUserData._id}, process.env.SECRET_KEY, {expiresIn : '2h'})
+//                     res.send({
+//                         message:"Login Success",
+//                         data:findUserData,
+//                         token
+//                     })
 
 
-                    // res.status(200).send({
-                    //     message: "Login Success"
-                    // });
-                }
-                else{
-                    res.status(400).send({
-                        message: "Invalid Password"
-                    });
-                }
+//                     // res.status(200).send({
+//                     //     message: "Login Success"
+//                     // });
+//                 }
+//                 else{
+//                     res.status(400).send({
+//                         message: " Password"
+//                     });
+//                 }
                 
-            }
-            else{
-                res.send({
-                    message: "User Not Found"
-                })
-            }
+//             }
+//             else{
+//                 res.send({
+//                     message: "User Not Found"
+//                 })
+//             }
             
 
             
+//         }
+//     // } catch (error) {
+//     //     res.send({
+//     //         message : error
+//     //     })
+//     // }Invalid
+
+// }
+
+
+exports.login = async (req, res) => {
+    const {error , value} = loginValidator.validate(req.body);
+    if (error) {
+        return res.status(400).send({
+            message: error.details[0].message
+        });
+    }
+
+    const {email, password} = req.body;
+    const findUserData = await findUser({ email: email });
+
+    if (findUserData) {
+        const checkPassword = await bcrypt.compare(password, findUserData.password);
+        if (checkPassword) {
+            const token = JWT.sign({ _id: findUserData._id }, process.env.SECRET_KEY, { expiresIn: '2h' });
+            return res.send({
+                message: "Login Success",
+                data: findUserData,  // Ensure usertype is included here
+                token
+            });
+        } else {
+            return res.status(400).send({
+                message: "Invalid Password"
+            });
         }
-    // } catch (error) {
-    //     res.send({
-    //         message : error
-    //     })
-    // }
-
-}
+    } else {
+        return res.status(404).send({
+            message: "User Not Found"
+        });
+    }
+};

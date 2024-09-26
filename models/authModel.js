@@ -20,11 +20,23 @@ const authSchema = mongoose.Schema({
         require:true,
         enum : ['user', 'admin']
     },
+
+//     profileImage: {
+//         type: String, // Usually you store the path or URL of the image
+//         required: true, // Ensure the image is required
+//         validate: {
+//             validator: function(v) {
+//                 // Check if the value is a valid image URL format (optional)
+//                 return /\.(jpg|jpeg|png|gif)$/.test(v);
+//             },
+//             message: props => `${props.value} is not a valid image format! Supported formats: jpg, jpeg, png, gif.`
+//         }
     
-    // profileId : {
-    //     type : mongoose.Schema.Types.ObjectId,
-    //     ref : "profile" 
-    // }
+//     // profileId : {
+//     //     type : mongoose.Schema.Types.ObjectId,
+//     //     ref : "profile" 
+//     // }
+// }
 })
 
 

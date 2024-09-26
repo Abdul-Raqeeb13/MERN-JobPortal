@@ -30,6 +30,13 @@ const userValidator = joi.object({
         'any.required': "Usertype is required",
         'any.only': "Usertype must be either 'user' or 'admin'"
       }),
+
+    //   profileImage: joi.string().required().regex(/\.(jpg|jpeg|png)$/).messages({
+    //     'string.empty': "Profile image cannot be empty",
+    //     'any.required': "Profile image is required",
+    //     'string.pattern.base': "Profile image must be a valid image format (jpg, jpeg, png)"
+    // })
+    
 })
 
 module.exports = userValidator
