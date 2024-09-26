@@ -25,8 +25,13 @@ export const AuthProvider = ({ children }) => {
     
   };
 
+  const adminLogin = () => {
+    localStorage.setItem('admin', JSON.stringify({ loggedIn: true }));
+
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, adminLogin }}>
       {children}
     </AuthContext.Provider>
   );

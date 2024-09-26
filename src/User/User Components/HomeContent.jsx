@@ -5,13 +5,14 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import AOS from 'aos'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import 'aos/dist/aos.css'
-
 
 
 export default function HomeContent() {
   
+  const nav = useNavigate()
+
   useEffect(()=>{
     AOS.init()
   }, [])
@@ -23,23 +24,39 @@ export default function HomeContent() {
     // navigate('/signup');
   };
 
+  const token = localStorage.getItem("Token")
+  const navigateToRoute = (index) => {
+    if(!token){
+      alert("Please login first")
+    }
+    else if(index === 0){
+      nav('/userjobs')
+    }
+    else if(index === 1){
+      nav('/resumebuilder')
+    }
+    else if (index === 2){
+      nav('/buildskills')
+    }
+    
+  }
 
   return (
     <>
       <section class="services" data-aos="fade-left" data-aos-once="false" data-aos-anchor-placement="top-center" data-aos-easing="ease-in-sine" >
         <h2 className='servicesHeading'> <span className='availabilityStyle'>Available</span> Services</h2>
         <div class="services-grid">
-          <div class="service-card">
+          <div class="service-card" onClick={()=>navigateToRoute(0)}>
             <img src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8am9iJTIwc2VhcmNofGVufDB8fDB8fHww" alt="Job Search" />
             <h3>Job Search</h3>
             <p>Find jobs that match your skills.</p>
           </div>
-          <div class="service-card">
+          <div class="service-card" onClick={()=>navigateToRoute(1)}>
             <img src="https://images.unsplash.com/photo-1565688534245-05d6b5be184a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHJlc3VtZSUyMGJ1aWxkZXJ8ZW58MHx8MHx8fDA%3D" alt="Resume Builder" />
             <h3>Resume Builder</h3>
             <p>Create a professional resume.</p>
           </div>
-          <div class="service-card">
+          <div class="service-card" onClick={()=>navigateToRoute(2)}>
             <img src="https://img.freepik.com/free-photo/top-view-skills-written-note-along-with-colorful-little-paper-notes-light-background-school-color-notepad-job-office-work-copybook_179666-18275.jpg?ga=GA1.1.1778619907.1708775132&semt=ais_hybrid" alt="Resume Builder" />
             <h3>Build Skills</h3>
             <p>Build market trend skills.</p>
