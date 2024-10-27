@@ -1,16 +1,22 @@
+/* Ensure the whole page has a black background */
+html, body {
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    height: 100%; /* Ensure full height */
+    background-color: #000; /* Black background */
+    color: #FFD700; /* Gold color for text */
+}
+
 .user-review-section {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 20px 0;
+    margin: 0; /* Remove margin */
     overflow: hidden; /* Ensure cards stay within bounds */
-    padding: 20px 0; /* Add some padding for spacing */
-
+    padding: 40px 0; /* Adjust padding for spacing above and below */
     text-align: center;
-    padding: 60px 0;
-    background-color: #f4f4f9;
-    overflow-x: hidden; /* Prevent horizontal scrolling during animation */
+    background-color: #222; /* Dark background for the review section */
 }
 
 .slider-container {
@@ -24,9 +30,7 @@
     display: flex;
     justify-content: center;
     gap: 20px; /* Increase gap for better spacing */
-    transition: transform 0.8s ease-in-out;
-     /* Smooth sliding transition */
-    /* Ensure smooth horizontal scrolling */
+    transition: transform 0.8s ease-in-out; /* Smooth sliding transition */
     width: 100%; /* Set to 100% to occupy full width */
 }
 
@@ -35,7 +39,7 @@
     width: 30%; /* Ensures cards have consistent width */
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px !important;
     transition: transform 0.5s ease; /* Smooth hover transition */
-    background-color: white;
+    background-color: #333; /* Darker card background */
     text-align: center; /* Center-align text */
 }
 
@@ -52,27 +56,26 @@
 .arrow-icon {
     font-size: 2.5rem !important;
     cursor: pointer;
-    color: #007bff;
+    color: #FFD700; /* Gold color for arrows */
     transition: color 0.3s ease;
     margin: 0 20px; /* Add consistent margin for spacing */
 }
 
 .arrow-icon:hover {
-    color: #151515;
+    color: #FFC107; /* Slightly darker gold on hover */
 }
 
-.reviewHeading{
+.reviewHeading {
     text-align: center;
-    margin-top: 20px;
+    margin: 20px 0; /* Adjusted for spacing */
+    color: #ffffff; /* Gold color for heading */
 }
 
-.reviewStyle{
-    background-color: #18b341;
-    /* padding: 5px; */
-    /* margin-top: 20px !important; */
-    /* padding-block: 20px; */
+.reviewStyle {
+    background-color: #FFD700; /* Gold background for the review style */
     padding: 5px;
     padding-left: 55px;
-    color: white;
+    color: black; /* Text color changed to black */
     border-radius: 10px;
-    clip-path: polygon(100% 0, 100% 53%, 100% 100%, 0% 100%, 25% 51%, 0% 0%);}
+    clip-path: polygon(100% 0, 100% 53%, 100% 100%, 0% 100%, 25% 51%, 0% 0%);
+}

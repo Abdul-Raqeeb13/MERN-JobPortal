@@ -8,12 +8,14 @@ import Home from './User/User Pages/Home'
 import UserJobs from './User/User Pages/UserJobs';
 import { AuthProvider } from './User/User Pages/AuthContext';
 import ProtectedRoute from './User/User Pages/ProtectedRoute'
+import UserAppliedJobs from './User/User Pages/UserAppliedJobs';
 
 // admins components
 import AdminAppLayout from './Admin/Admin Pages/AdminAppLayout';
 import AdminDashboard from './Admin/Admin Pages/AdminDashboard';
 import AdminAddJobs from './Admin/Admin Pages/AdminAddJobs'
-
+import AdminViewJobs from './Admin/Admin Pages/AdminViewJobs';
+import AdminAppliedJobs from './Admin/Admin Pages/AdminAppliedJobs';
 
 
 const router  = createBrowserRouter([
@@ -28,6 +30,10 @@ const router  = createBrowserRouter([
       {
         path : "/userjobs",
         element: <ProtectedRoute element={<UserJobs />} />
+      },
+      {
+        path : "/userappliedjobs",
+        element: <UserAppliedJobs />
       },
     ]
   }
@@ -44,14 +50,14 @@ const router  = createBrowserRouter([
         path: "/admin/addjobs",
         element: <AdminAddJobs />
       },
-      // {
-      //   path: "/admin/viewjobs",
-      //   element: <ViewJobs />
-      // },
-      // {
-      //   path: "/admin/appliedjob",
-      //   element: <UserAppliedJobs />
-      // },
+      {
+        path: "/admin/viewjobs",
+        element: <AdminViewJobs />
+      },
+      {
+        path: "/admin/appliedjob",
+        element: <AdminAppliedJobs />
+      },
       // {
       //   path: "/admin/addevents",
       //   element: <AddEvent />

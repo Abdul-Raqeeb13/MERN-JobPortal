@@ -84,7 +84,7 @@ export default function HomeContent() {
 
 
             <Col md={6} className='ChooseUsText'  data-aos="fade-left" data-aos-once="false"  data-aos-easing="ease-in-sine">
-            <h4>Why Choose US</h4>
+            <h4 className='text-warning'>Why Choose US</h4>
               <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Praesentium ad provident culpa omnis est nulla qui sunt adipisci tempora veniam dolore aspernatur maxime, iste temporibus, atque totam officiis quod iusto quaerat aliquid placeat quo tenetur? Saepe ducimus, magnam at hic delectus laudantium omnis officia tempora consectetur, adipisci necessitatibus culpa quibusdam odit libero harum quisquam alias aspernatur ad asperiores! Rerum pariatur aperiam at vel in rem. Ex, inventore minus quasi nobis iusto reiciendis expedita error quae tempora id dolor excepturi. Nobis repellat natus voluptates nihil illum sed iure! Cupiditate vitae, laboriosam aperiam minima, rem eius esse ipsam molestiae recusandae delectus iure.</p>
             </Col>
           </Row>

@@ -71,6 +71,8 @@ export default function UserReview() {
 
     return (
         <>
+
+<section class="services" data-aos="fade-left" data-aos-once="false" data-aos-anchor-placement="top-center" data-aos-easing="ease-in-sine" >
             <h2 className='reviewHeading'>Customer <span className='reviewStyle'>Reviews</span></h2>
             <Container className="user-review-section" data-aos="fade-right" data-aos-once="false"  data-aos-easing="ease-in-sine">
                     <ArrowBackIcon onClick={handlePrev} className="arrow-icon" />
@@ -103,6 +105,7 @@ export default function UserReview() {
                 </div>
                     <ArrowForwardIcon onClick={handleNext} className="arrow-icon" />
             </Container>
+            </section>
         </>
     );
 }
