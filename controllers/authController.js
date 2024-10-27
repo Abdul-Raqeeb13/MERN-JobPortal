@@ -126,7 +126,7 @@ exports.login = async (req, res) => {
     if (findUserData) {
         const checkPassword = await bcrypt.compare(password, findUserData.password);
         if (checkPassword) {
-            const token = JWT.sign({ _id: findUserData._id }, process.env.SECRET_KEY, { expiresIn: '2h' });
+            const token = JWT.sign({ _id: findUserData._id }, process.env.SECRET_KEY);
             return res.send({
                 message: "Login Success",
                 data: findUserData,  // Ensure usertype is included here

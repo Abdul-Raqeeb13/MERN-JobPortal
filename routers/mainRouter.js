@@ -1,10 +1,10 @@
 const express = require("express")
-const authRouter = require('./authRouter')
+const userRouter = require('./userRouter')
 const mainrouter = express.Router()
 const adminRouter = require('./adminRouter')
 
 
-mainrouter.use("/user", authRouter)
+mainrouter.use("/user", userRouter)
 mainrouter.use("/admin",adminRouter)
 
 
