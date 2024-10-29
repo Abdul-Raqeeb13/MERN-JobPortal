@@ -45,11 +45,61 @@ exports.createUserWithJob = (userId,useremail, jobdata) => {
 };
 
 
-// exports.createUserWithJob = (userId, jobdata) => {
-//   // Create a new ObjectId from the provided userId
-//   const newUser = new AppliedJobs({
-//       userId, // Convert userId to ObjectId
-//       jobs: [jobdata]  // Add the first full job object to the array
-//   });
-//   return newUser.save();
+// exports.updateJobStatus = async (parentId, jobId) => {
+//   try {
+//     // Update the specific job's status in the jobs array
+//     const result = await AppliedJobs.findOneAndUpdate(
+//       { _id: parentId, "jobs._id": jobId }, // Use jobId directly
+//       { $set: { "jobs.$.status": "Accepted" } }, // Use the positional operator to update the matched job
+//       { new: true } // Return the updated document
+//     );
+
+//     return result;
+//   } catch (error) {
+//     console.error("Error updating job status:", error);
+//     throw error;
+//   }
 // };
+
+
+// db.collection.updateOne(
+//   {
+//     "_id": ObjectId("671e75d494b04ee5a50e6ad3"), // Main ID
+//     "jobs._id": ObjectId("671e16b12e589860f204b786")  // Job ID
+//   },
+//   {
+//     $set: {
+//       "jobs.$.status": "updatedStatus" // Replace "updatedStatus" with the desired status
+//     }
+//   }
+// )
+
+
+
+exports.updateJobStatus = async (parentId, jobId) => {
+  try {
+    // Convert IDs to ObjectId instances with 'new'
+    const parentObjectId = new mongoose.Types.ObjectId(parentId);
+    const jobObjectId = new mongoose.Types.ObjectId(jobId);
+
+    // console.log("Parent ID:", parentObjectId);
+    // console.log("Job ID:", jobObjectId);
+    
+    const result = await AppliedJobs.updateOne(
+      {
+        _id: parentObjectId, // Main ID
+        "jobs._id": jobObjectId // Job ID in the jobs array
+      },
+      {
+        $set: {
+          "jobs.$.status": "Accepted" // Desired status
+        }
+      }
+    );
+
+    return result; // Return the result of the update operation
+  } catch (error) {
+    console.error("Error updating job status:", error);
+    throw error; // Re-throw the error for further handling
+  }
+};

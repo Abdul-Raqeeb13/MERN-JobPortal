@@ -1,5 +1,6 @@
 const adminAddJobFormValidator = require("../validators/adminAddJobValidator");
 const { postJob, getAllJobs, deleteJobs } = require('../models/adminModel');
+const { getall, updateJobStatus } = require('../models/userModel')
 
 exports.adminAddJobs = (async (req, res) => { 
     try {
@@ -91,10 +92,71 @@ exports.adminDeleteJobs = async (req, res) => {
 
 exports.adminAppliedJobs = async (req, res) => {
     try {
-
+        const appliedJobs = await getall();
         
-        
+        // Send the data to the frontend
+        res.status(200).json({
+            success: true,
+            data: appliedJobs
+        });
     } catch (error) {
+        console.error("Error fetching applied jobs:", error);
+
+        // Send error response to the frontend
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch applied jobs"
+        });
+    }
+};
+
+
+// exports.adminAcceptJobs = async (req, res) => {
+//     try {
+
+//         // console.log(req.body.jobId);
         
+//         const updatestatus = await updateJobStatus(req.body.jobId, req.body.JobDetails)
+//         console.log(req.body.jobId, req.body.JobDetails);
+        
+
+//     } catch (error) {
+//         console.error("Error fetching applied jobs:", error);
+
+//         // Send error response to the frontend
+//         res.status(500).json({
+//             success: false,
+//             message: "Failed to Update status"
+//         });
+//     }
+// }
+
+exports.adminAcceptJobs = async (req, res) => {
+    try {
+        const { jobId, JobDetails } = req.body;
+        const updatedJob = await updateJobStatus(jobId, JobDetails);
+        // const updatedJob = await updateJobStatus({ jobId, JobDetails });
+
+        console.log(updatedJob);
+        
+
+        // if (updatedJob) {
+        //     res.json({
+        //         success: true,
+        //         message: "Job status updated successfully",
+        //         data: updatedJob
+        //     });
+        // } else {
+        //     res.status(404).json({
+        //         success: false,
+        //         message: "Job or user not found"
+        //     });
+        // }
+    } catch (error) {
+        console.error("Error updating job status:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update job status"
+        });
     }
 };
