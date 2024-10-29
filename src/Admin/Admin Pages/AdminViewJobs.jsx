@@ -94,7 +94,7 @@ const AdminViewJobs = () => {
   const handleDelete = async (jobId) => {
     const token = localStorage.getItem('Token');
     
-    // try {
+    try {
       const response = await axios({
         method: "DELETE",
         url: `http://localhost:8000/admin/admindeletejobs/?id=${jobId}`, // Send ID as a query parameter
@@ -110,10 +110,10 @@ const AdminViewJobs = () => {
       } else {
         setError('Failed to delete job');
       }
-    // } catch (error) {
-    //   console.error(error);
-    //   setError('An error occurred while deleting');
-    // }
+    } catch (error) {
+      console.error(error);
+      setError('An error occurred while deleting');
+    }
   };
   
 

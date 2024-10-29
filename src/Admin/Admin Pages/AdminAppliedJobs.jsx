@@ -7,10 +7,8 @@ export default function AdminAppliedJobs() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchadminAppliedJobs = async () => {
+    const fetchAdminAppliedJobs = async () => {
       const token = localStorage.getItem('Token');
-      const userId = localStorage.getItem('UserID');
-
       try {
         const response = await axios({
           method: "GET",
@@ -21,41 +19,126 @@ export default function AdminAppliedJobs() {
           },
         });
 
+        console.log(response.data.data);
+        
         if (response.data && response.data.success) {
           setJobs(response.data.data);
         } else {
-          setError('No any job yet');
+          setError('No jobs available');
         }
       } catch (error) {
         setError(error.response?.data?.message || "An error occurred while fetching jobs");
       }
     };
-
-    fetchadminAppliedJobs();
+    fetchAdminAppliedJobs();
   }, []);
+
+  const handleAccept = async (jobId , userid , JobDetails) => {
+    const token = localStorage.getItem('Token');
+
+    try {
+
+      const JobsIDs = {
+        jobId,
+        userid,
+        JobDetails,
+      }
+
+      const response = await axios({
+        method: "POST",
+        url: `http://localhost:8000/admin/adminacceptJob`, // Send ID as a query parameter
+        headers: {
+          'Authorization': `${token}`,
+          'Content-Type': "application/json"
+        },
+        data: JobsIDs  // Send the object directly, no need to stringify
+      }); 
+
+      console.log(response);
+      
+      // await axios.post(`http://localhost:8000/admin/acceptJob?id=${jobId}`, {}, {
+      //   headers: { 'Authorization': `${token}`, 'Content-Type': 'application/json' }
+      // });
+      setJobs(prevJobs => prevJobs.map(job => 
+        job._id === jobId ? { ...job, status: 'Accepted' } : job
+      ));
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to accept the job");
+    }
+  };
+
+  const handleReject = async (jobId) => {
+    const token = localStorage.getItem('Token');
+    try {
+      await axios.post(`http://localhost:8000/admin/rejectJob?id=${jobId}`, {}, {
+        headers: { 'Authorization': `${token}`, 'Content-Type': 'application/json' }
+      });
+      setJobs(prevJobs => prevJobs.map(job => 
+        job._id === jobId ? { ...job, status: 'Rejected' } : job
+      ));
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to reject the job");
+    }
+  };
 
   return (
     <Background>
       <Heading>Users Applied Jobs</Heading>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <Container>
-        {jobs.length > 0 ? (
+     
+        {jobs.map((jobs =>{
+          console.log(jobs._id);
+          console.log(jobs.userId);
+          
+          return(
+            jobs.jobs.map((jobdata => {
+              return(
+               <JobCard key={jobdata._id}>
+               <JobTitle>{jobdata.title}</JobTitle>
+               <CompanyName>{jobdata.company}</CompanyName>
+               <JobDetails>
+                 <DetailItem><strong>Location:</strong> {jobdata.location}</DetailItem>
+                 <DetailItem><strong>Experience:</strong> {jobdata.experience}</DetailItem>
+                 <DetailItem><strong>Salary:</strong> {jobdata.salary}</DetailItem>
+                 <DetailItem><strong>Status:</strong> {jobdata.status}</DetailItem>
+                 <small>Applied At: {new Date(jobdata.appliedAt).toLocaleDateString()}</small>
+               </JobDetails>
+               <ButtonContainer>
+                 <AcceptButton onClick={() => handleAccept(jobs._id , jobs.userId , jobdata._id)}>Accept</AcceptButton>
+                 <RejectButton onClick={() => handleReject()}>Reject</RejectButton>
+               </ButtonContainer>
+             </JobCard>
+              )
+             
+             }))       
+
+          )
+       
+
+        }))}
+
+        {/* {jobs.length > 0 ? (
           jobs.map(job => (
             <JobCard key={job._id}>
               <JobTitle>{job.title}</JobTitle>
               <CompanyName>{job.company}</CompanyName>
               <JobDetails>
-                <DetailItem><strong>Location : </strong> {job.location}</DetailItem>
-                <DetailItem><strong>Experience : </strong> {job.experience}</DetailItem>
-                <DetailItem><strong>Salary : </strong> {job.salary}</DetailItem>
-                <DetailItem><strong>Status : </strong> {job.status}</DetailItem>
-                <small>Applied At : {new Date(job.appliedAt).toLocaleDateString()}</small>
+                <DetailItem><strong>Location:</strong> {job.location}</DetailItem>
+                <DetailItem><strong>Experience:</strong> {job.experience}</DetailItem>
+                <DetailItem><strong>Salary:</strong> {job.salary}</DetailItem>
+                <DetailItem><strong>Status:</strong> {job.status}</DetailItem>
+                <small>Applied At: {new Date(job.appliedAt).toLocaleDateString()}</small>
               </JobDetails>
+              <ButtonContainer>
+                <AcceptButton onClick={() => handleAccept(job._id)}>Accept</AcceptButton>
+                <RejectButton onClick={() => handleReject(job._id)}>Reject</RejectButton>
+              </ButtonContainer>
             </JobCard>
           ))
         ) : (
           !error && <NoJobsMessage>No jobs available</NoJobsMessage>
-        )}
+        )} */}
       </Container>
     </Background>
   );
@@ -64,7 +147,7 @@ export default function AdminAppliedJobs() {
 // Styled components for styling job cards
 
 const Background = styled.div`
-  background-color: #000000; /* Black background */
+  background-color: #000000;
   min-height: 100vh;
   padding: 20px;
 `;
@@ -72,13 +155,13 @@ const Background = styled.div`
 const Heading = styled.h1`
   text-align: center;
   margin: 20px 0;
-  color: #FFD700; /* Gold color for the heading */
+  color: #FFD700;
   font-size: 2.5rem;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 `;
 
 const ErrorMessage = styled.p`
-  color: #FF6347; /* Light red for error message */
+  color: #FF6347;
   text-align: center;
   font-weight: bold;
 `;
@@ -91,8 +174,8 @@ const Container = styled.div`
 `;
 
 const JobCard = styled.div`
-  background-color: #1A1A1A; /* Dark gray background */
-  border: 1px solid #FFD700; /* Gold border */
+  background-color: #1A1A1A;
+  border: 1px solid #FFD700;
   border-radius: 8px;
   padding: 20px;
   width: 45%;
@@ -102,41 +185,23 @@ const JobCard = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, transparent 50%, #FFD700 50%);
-    opacity: 0.05; /* Thin gold accent line */
-  }
-
-  &:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-  }
 `;
 
 const JobTitle = styled.h3`
   font-size: 1.5rem;
-  color: #FFD700; /* Gold color for title */
+  color: #FFD700;
   margin-bottom: 5px;
 `;
 
 const CompanyName = styled.h4`
   font-size: 1.1rem;
-  color: #CCCCCC; /* Light gray for company name */
+  color: #CCCCCC;
   margin-bottom: 15px;
 `;
 
 const JobDetails = styled.div`
   font-size: 0.9rem;
-  color: #E0E0E0; /* Light gray for details */
+  color: #E0E0E0;
   line-height: 1.6;
 `;
 
@@ -145,7 +210,41 @@ const DetailItem = styled.p`
   display: flex;
   align-items: center;
   font-size: 0.9rem;
-  color: #E0E0E0; /* Light gray color for individual detail items */
+  color: #E0E0E0;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+`;
+
+const AcceptButton = styled.button`
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  flex: 1;
+  &:hover {
+    background-color: #218838;
+  }
+`;
+
+const RejectButton = styled.button`
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  flex: 1;
+  &:hover {
+    background-color: #c82333;
+  }
 `;
 
 const NoJobsMessage = styled.p`
