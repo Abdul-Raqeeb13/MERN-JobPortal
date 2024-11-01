@@ -1,13 +1,6 @@
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb'); 
-// Define schema for applied jobs
-// const appliedJobsSchema = new mongoose.Schema({
-//   userId: { type: String, required: true, unique: true },  // Unique user ID
-//   jobs: [{ 
-//     type: Object,  // Job details will be stored as an object (entire jobData with additional fields)
-//     required: true
-//   }]
-// });
+const {sendMail} = require('../Utilities/sendMail')
 
 const appliedJobsSchema = new mongoose.Schema({
   userId: { type: String, required: true, unique: true },  // Unique user ID
@@ -45,38 +38,7 @@ exports.createUserWithJob = (userId,useremail, jobdata) => {
 };
 
 
-// exports.updateJobStatus = async (parentId, jobId) => {
-//   try {
-//     // Update the specific job's status in the jobs array
-//     const result = await AppliedJobs.findOneAndUpdate(
-//       { _id: parentId, "jobs._id": jobId }, // Use jobId directly
-//       { $set: { "jobs.$.status": "Accepted" } }, // Use the positional operator to update the matched job
-//       { new: true } // Return the updated document
-//     );
-
-//     return result;
-//   } catch (error) {
-//     console.error("Error updating job status:", error);
-//     throw error;
-//   }
-// };
-
-
-// db.collection.updateOne(
-//   {
-//     "_id": ObjectId("671e75d494b04ee5a50e6ad3"), // Main ID
-//     "jobs._id": ObjectId("671e16b12e589860f204b786")  // Job ID
-//   },
-//   {
-//     $set: {
-//       "jobs.$.status": "updatedStatus" // Replace "updatedStatus" with the desired status
-//     }
-//   }
-// )
-
-
-
-exports.updateJobStatus = async (parentId, jobId) => {
+exports.updateAcceptJobStatus = async (parentId, jobId, username, useremail, jobtitle) => {
   try {
     // Convert IDs to ObjectId instances with 'new'
     const parentObjectId = new mongoose.Types.ObjectId(parentId);
@@ -97,7 +59,45 @@ exports.updateJobStatus = async (parentId, jobId) => {
       }
     );
 
+    const sendemail = await sendMail(username, useremail , jobtitle, "Accepted") 
+
+
     return result; // Return the result of the update operation
+  } catch (error) {
+    console.error("Error updating job status:", error);
+    throw error; // Re-throw the error for further handling
+  }
+};
+
+
+
+exports.updateRejectJobStatus = async (parentId, jobId, username, useremail, jobtitle) => {
+  try {
+
+    // Convert IDs to ObjectId instances with 'new'
+    const parentObjectId = new mongoose.Types.ObjectId(parentId);
+    const jobObjectId = new mongoose.Types.ObjectId(jobId);
+
+    // console.log("Parent ID:", parentObjectId);
+    // console.log("Job ID:", jobObjectId);
+    
+    const result = await AppliedJobs.updateOne(
+      {
+        _id: parentObjectId, // Main ID
+        "jobs._id": jobObjectId // Job ID in the jobs array
+      },
+      {
+        $set: {
+          "jobs.$.status": "Rejected" // Desired status
+        }
+      }
+    );
+
+
+    const sendemail = await sendMail(username, useremail , jobtitle, "Rejected") 
+    
+
+    // return result; // Return the result of the update operation
   } catch (error) {
     console.error("Error updating job status:", error);
     throw error; // Re-throw the error for further handling

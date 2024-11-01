@@ -1,6 +1,7 @@
 const adminAddJobFormValidator = require("../validators/adminAddJobValidator");
-const { postJob, getAllJobs, deleteJobs } = require('../models/adminModel');
-const { getall, updateJobStatus } = require('../models/userModel')
+const { postJob, getAllJobs, deleteJobs,getJob } = require('../models/adminModel');
+const { getall, updateAcceptJobStatus, updateRejectJobStatus } = require('../models/userModel')
+const {findUserById} = require('../models/authModel')
 
 exports.adminAddJobs = (async (req, res) => { 
     try {
@@ -133,25 +134,49 @@ exports.adminAppliedJobs = async (req, res) => {
 
 exports.adminAcceptJobs = async (req, res) => {
     try {
-        const { jobId, JobDetails } = req.body;
-        const updatedJob = await updateJobStatus(jobId, JobDetails);
-        // const updatedJob = await updateJobStatus({ jobId, JobDetails });
+        const { jobId, JobDetails, userid } = req.body;
 
-        console.log(updatedJob);
+        // Retrieve user and job information
+        const getUser = await findUserById(userid);
+        const JobData = await getJob(JobDetails);
+
+        // Update the job status to 'accepted'
+        const updatedJob = await updateAcceptJobStatus(jobId, JobDetails, getUser.name, getUser.email, JobData.title);
+
+        // Send a success response with updated job information
+        res.status(200).json({
+            success: true,
+            message: "Job status updated to accepted",
+            data: updatedJob
+        });
         
+    } catch (error) {
+        console.error("Error updating job status:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update job status"
+        });
+    }
+};
 
-        // if (updatedJob) {
-        //     res.json({
-        //         success: true,
-        //         message: "Job status updated successfully",
-        //         data: updatedJob
-        //     });
-        // } else {
-        //     res.status(404).json({
-        //         success: false,
-        //         message: "Job or user not found"
-        //     });
-        // }
+
+
+exports.adminRejectJobs = async (req, res) => {
+    try {
+        const { jobId, JobDetails, userid } = req.body;
+        // console.log("aaaaaa" , jobId, JobDetails);
+        const getUser = await findUserById(userid)
+        const JobData = await getJob(JobDetails)
+        console.log(getUser.name);
+        
+        const updatedJob = await updateRejectJobStatus(jobId, JobDetails, getUser.name, getUser.email, JobData.title);
+        console.log(updatedJob);
+        res.status(200).json({
+            success: true,
+            message: "Job status updated to rejected",
+            data: updatedJob
+        });
+        
     } catch (error) {
         console.error("Error updating job status:", error);
         res.status(500).json({
