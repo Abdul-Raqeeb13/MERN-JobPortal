@@ -20,7 +20,7 @@ export default function AdminAppliedJobs() {
         });
 
         console.log(response.data.data);
-        
+
         if (response.data && response.data.success) {
           setJobs(response.data.data);
         } else {
@@ -31,9 +31,9 @@ export default function AdminAppliedJobs() {
       }
     };
     fetchAdminAppliedJobs();
-  }, []);
+  }, [jobs]);
 
-  const handleAccept = async (jobId , userid , JobDetails) => {
+  const handleAccept = async (jobId, userid, JobDetails) => {
     const token = localStorage.getItem('Token');
 
     try {
@@ -52,14 +52,9 @@ export default function AdminAppliedJobs() {
           'Content-Type': "application/json"
         },
         data: JobsIDs  // Send the object directly, no need to stringify
-      }); 
+      });
 
-      console.log(response);
-      
-      // await axios.post(`http://localhost:8000/admin/acceptJob?id=${jobId}`, {}, {
-      //   headers: { 'Authorization': `${token}`, 'Content-Type': 'application/json' }
-      // });
-      setJobs(prevJobs => prevJobs.map(job => 
+      setJobs(prevJobs => prevJobs.map(job =>
         job._id === jobId ? { ...job, status: 'Accepted' } : job
       ));
     } catch (error) {
@@ -67,13 +62,29 @@ export default function AdminAppliedJobs() {
     }
   };
 
-  const handleReject = async (jobId) => {
+  const handleReject = async (jobId, userid, JobDetails) => {
+
     const token = localStorage.getItem('Token');
+
     try {
-      await axios.post(`http://localhost:8000/admin/rejectJob?id=${jobId}`, {}, {
-        headers: { 'Authorization': `${token}`, 'Content-Type': 'application/json' }
+
+      const JobsIDs = {
+        jobId,
+        userid,
+        JobDetails,
+      }
+
+      const response = await axios({
+        method: "POST",
+        url: `http://localhost:8000/admin/adminrejectJob`, // Send ID as a query parameter
+        headers: {
+          'Authorization': `${token}`,
+          'Content-Type': "application/json"
+        },
+        data: JobsIDs  // Send the object directly, no need to stringify
       });
-      setJobs(prevJobs => prevJobs.map(job => 
+
+      setJobs(prevJobs => prevJobs.map(job =>
         job._id === jobId ? { ...job, status: 'Rejected' } : job
       ));
     } catch (error) {
@@ -86,62 +97,40 @@ export default function AdminAppliedJobs() {
       <Heading>Users Applied Jobs</Heading>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <Container>
-     
-        {jobs.map((jobs =>{
-          console.log(jobs._id);
-          console.log(jobs.userId);
-          
-          return(
-            jobs.jobs.map((jobdata => {
-              return(
-               <JobCard key={jobdata._id}>
-               <JobTitle>{jobdata.title}</JobTitle>
-               <CompanyName>{jobdata.company}</CompanyName>
-               <JobDetails>
-                 <DetailItem><strong>Location:</strong> {jobdata.location}</DetailItem>
-                 <DetailItem><strong>Experience:</strong> {jobdata.experience}</DetailItem>
-                 <DetailItem><strong>Salary:</strong> {jobdata.salary}</DetailItem>
-                 <DetailItem><strong>Status:</strong> {jobdata.status}</DetailItem>
-                 <small>Applied At: {new Date(jobdata.appliedAt).toLocaleDateString()}</small>
-               </JobDetails>
-               <ButtonContainer>
-                 <AcceptButton onClick={() => handleAccept(jobs._id , jobs.userId , jobdata._id)}>Accept</AcceptButton>
-                 <RejectButton onClick={() => handleReject()}>Reject</RejectButton>
-               </ButtonContainer>
-             </JobCard>
-              )
-             
-             }))       
+        {jobs.length > 0 ? (
+          jobs.map((jobGroup) =>
+            jobGroup.jobs.map((jobdata) => (
+              <JobCard key={jobdata._id}>
+                <JobTitle>{jobdata.title}</JobTitle>
+                <CompanyName>{jobdata.company}</CompanyName>
+                <JobDetails>
+                  <DetailItem><strong>Location:</strong> {jobdata.location}</DetailItem>
+                  <DetailItem><strong>Experience:</strong> {jobdata.experience}</DetailItem>
+                  <DetailItem><strong>Salary:</strong> {jobdata.salary}</DetailItem>
+                  <DetailItem><strong>Status:</strong> {jobdata.status}</DetailItem>
+                  <small>Applied At: {new Date(jobdata.appliedAt).toLocaleDateString()}</small>
+                </JobDetails>
 
+                {jobdata.status !== 'Accepted' && jobdata.status !== 'Rejected' && (
+                  <ButtonContainer>
+                    <AcceptButton onClick={() => handleAccept(jobGroup._id, jobGroup.userId, jobdata._id)}>Accept</AcceptButton>
+                    <RejectButton onClick={() => handleReject(jobGroup._id, jobGroup.userId, jobdata._id)}>Reject</RejectButton>
+                  </ButtonContainer>
+                )}
+
+              </JobCard>
+            ))
           )
-       
-
-        }))}
-
-        {/* {jobs.length > 0 ? (
-          jobs.map(job => (
-            <JobCard key={job._id}>
-              <JobTitle>{job.title}</JobTitle>
-              <CompanyName>{job.company}</CompanyName>
-              <JobDetails>
-                <DetailItem><strong>Location:</strong> {job.location}</DetailItem>
-                <DetailItem><strong>Experience:</strong> {job.experience}</DetailItem>
-                <DetailItem><strong>Salary:</strong> {job.salary}</DetailItem>
-                <DetailItem><strong>Status:</strong> {job.status}</DetailItem>
-                <small>Applied At: {new Date(job.appliedAt).toLocaleDateString()}</small>
-              </JobDetails>
-              <ButtonContainer>
-                <AcceptButton onClick={() => handleAccept(job._id)}>Accept</AcceptButton>
-                <RejectButton onClick={() => handleReject(job._id)}>Reject</RejectButton>
-              </ButtonContainer>
-            </JobCard>
-          ))
         ) : (
           !error && <NoJobsMessage>No jobs available</NoJobsMessage>
-        )} */}
+        )}
       </Container>
     </Background>
   );
+
+
+
+
 }
 
 // Styled components for styling job cards
