@@ -32,7 +32,8 @@ export default function UserAppliedJobs() {
     };
 
     fetchUserAppliedJobs();
-  }, [jobs]);
+    
+  }, []);
 
   return (
     <Background>

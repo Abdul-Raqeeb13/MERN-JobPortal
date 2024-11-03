@@ -14,30 +14,34 @@ function MyNavbar() {
     const { isAuthenticated, login, logout, adminLogin } = useAuth();
     const [showForm, setShowForm] = useState(false);
     const [show, setShow] = useState(false);
-    const nav = useNavigate();
-
-    const handleClose = () => {
-        setShow(false);
-        setUserData({
-            name: "",
-            email: "",
-            password: "",
-            usertype: "user"
-        });
-        setMessage("");
-        setShowForm(false);
-    };
-
-    const handleShow = () => setShow(true);
-
     const [userData, setUserData] = useState({
         name: "",
         email: "",
         password: "",
-        usertype: "user"
+        usertype: "user",
+        file: null
     });
-
     const [message, setMessage] = useState("");
+    const nav = useNavigate();
+
+    const handleClose = () => {
+        setShow(false);
+        resetForm();
+    };
+
+    const handleShow = () => setShow(true);
+
+    const resetForm = () => {
+        setUserData({
+            name: "",
+            email: "",
+            password: "",
+            usertype: "user",
+            file: null
+        });
+        setMessage("");
+        setShowForm(false);
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -47,60 +51,66 @@ function MyNavbar() {
         }));
     };
 
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setUserData((prevData) => ({
+            ...prevData,
+            file: file,
+        }));
+    };
+
+    const buildDataToSend = () => {
+        const formData = new FormData();
+        if (showForm) {
+            return { email: userData.email, password: userData.password };
+        } else {
+            formData.append('email', userData.email);
+            formData.append('password', userData.password);
+            formData.append('name', userData.name);
+            formData.append('usertype', userData.usertype);
+            if (userData.file) {
+                formData.append('UserCV', userData.file); // Change here to match the backend
+            }
+            return formData;
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const dataToSend = showForm
-            ? { email: userData.email, password: userData.password }
-            : userData;
+        const dataToSend = buildDataToSend();
 
         try {
             const response = await axios({
                 method: "POST",
                 url: showForm ? 'http://localhost:8000/user/login' : 'http://localhost:8000/user/signup',
-                headers: { 'Content-Type': "application/json" },
-                data: JSON.stringify(dataToSend)
+                headers: {
+                    'Content-Type': showForm ? 'application/json' : 'multipart/form-data'
+                },
+                data: showForm ? JSON.stringify(dataToSend) : dataToSend
             });
 
             if (response.data.token) {
-                const userType = response.data.data.usertype;  
-                const userId = response.data.data._id;  
-
+                const { usertype, _id: userId } = response.data.data;
                 toast.success("Login success", {
                     position: "top-center",
                     autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
                     theme: "dark",
                 });
-
                 localStorage.setItem("Token", response.data.token);
                 localStorage.setItem("UserID", userId);
-
                 setTimeout(() => {
                     handleClose();
-                    if (userType === 'user') {
-                        login();
-                        nav('/');
-                    } else if (userType === 'admin') {
-                        nav('/admin', { replace: true });
-                        adminLogin();
-                    }
+                    usertype === 'user' ? login() : adminLogin();
+                    nav(usertype === 'user' ? '/' : '/admin', { replace: true });
                 }, 2000);
             } else if (response.data.message === "Signup successful!") {
                 toast.success("Account created successfully!", {
                     position: "top-center",
                     autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
                     theme: "dark",
                 });
-
                 setTimeout(() => {
-                    userData.password = "";
+                    resetForm();
                     setShowForm(true);
                 }, 2500);
             } else {
@@ -110,10 +120,6 @@ function MyNavbar() {
             toast.error(error.response?.data?.message || "Something went wrong", {
                 position: "top-center",
                 autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
                 theme: "dark",
             });
             setMessage(error.response?.data?.message || "Something went wrong");
@@ -124,13 +130,8 @@ function MyNavbar() {
         toast.success("Logout success", {
             position: "top-center",
             autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
             theme: "dark",
         });
-
         setTimeout(() => {
             localStorage.clear();
             logout();
@@ -153,6 +154,15 @@ function MyNavbar() {
                         )}
                         <TextField id="email" label="Email" variant="outlined" name="email" value={userData.email} onChange={handleInputChange} className="custom-modal-input" />
                         <TextField id="password" label="Password" variant="outlined" name="password" value={userData.password} onChange={handleInputChange} className="custom-modal-input" />
+                        {!showForm && (
+                            <input
+                                type="file"
+                                accept="application/pdf"
+                                required
+                                name='UserCV' // Ensure this matches the backend
+                                onChange={handleFileChange}
+                            />
+                        )}
                         <Button variant="contained" type="submit" className="custom-modal-btn">{showForm ? "Login" : "Create Account"}</Button>
                         <p>
                             {showForm ? "Don't have an account?" : "Already have an account?"}

@@ -19,7 +19,6 @@ export default function AdminAppliedJobs() {
           },
         });
 
-        console.log(response.data.data);
 
         if (response.data && response.data.success) {
           setJobs(response.data.data);
@@ -31,13 +30,14 @@ export default function AdminAppliedJobs() {
       }
     };
     fetchAdminAppliedJobs();
-  }, [jobs]);
+    console.log("run");
+    
+  }, []);
 
   const handleAccept = async (jobId, userid, JobDetails) => {
     const token = localStorage.getItem('Token');
 
     try {
-
       const JobsIDs = {
         jobId,
         userid,
@@ -46,12 +46,12 @@ export default function AdminAppliedJobs() {
 
       const response = await axios({
         method: "POST",
-        url: `http://localhost:8000/admin/adminacceptJob`, // Send ID as a query parameter
+        url: `http://localhost:8000/admin/adminacceptJob`,
         headers: {
           'Authorization': `${token}`,
           'Content-Type': "application/json"
         },
-        data: JobsIDs  // Send the object directly, no need to stringify
+        data: JobsIDs
       });
 
       setJobs(prevJobs => prevJobs.map(job =>
@@ -62,12 +62,17 @@ export default function AdminAppliedJobs() {
     }
   };
 
-  const handleReject = async (jobId, userid, JobDetails) => {
 
+  const handleViewCV = (userid) => {
+    console.log(userid);
+    
+  }
+
+
+  const handleReject = async (jobId, userid, JobDetails) => {
     const token = localStorage.getItem('Token');
 
     try {
-
       const JobsIDs = {
         jobId,
         userid,
@@ -76,12 +81,12 @@ export default function AdminAppliedJobs() {
 
       const response = await axios({
         method: "POST",
-        url: `http://localhost:8000/admin/adminrejectJob`, // Send ID as a query parameter
+        url: `http://localhost:8000/admin/adminrejectJob`,
         headers: {
           'Authorization': `${token}`,
           'Content-Type': "application/json"
         },
-        data: JobsIDs  // Send the object directly, no need to stringify
+        data: JobsIDs
       });
 
       setJobs(prevJobs => prevJobs.map(job =>
@@ -104,20 +109,21 @@ export default function AdminAppliedJobs() {
                 <JobTitle>{jobdata.title}</JobTitle>
                 <CompanyName>{jobdata.company}</CompanyName>
                 <JobDetails>
-                  <DetailItem><strong>Location:</strong> {jobdata.location}</DetailItem>
-                  <DetailItem><strong>Experience:</strong> {jobdata.experience}</DetailItem>
-                  <DetailItem><strong>Salary:</strong> {jobdata.salary}</DetailItem>
-                  <DetailItem><strong>Status:</strong> {jobdata.status}</DetailItem>
-                  <small>Applied At: {new Date(jobdata.appliedAt).toLocaleDateString()}</small>
+                  <DetailItem><strong>User Email :  </strong> { jobGroup.useremail}</DetailItem>
+                  <DetailItem><strong>Location :  </strong> {jobdata.location}</DetailItem>
+                  <DetailItem><strong>Experience :  </strong> {jobdata.experience}</DetailItem>
+                  <DetailItem><strong>Salary :  </strong> {jobdata.salary}</DetailItem>
+                  <DetailItem><strong>Status :  </strong> {jobdata.status}</DetailItem>
+                  <small>Applied At : {new Date(jobdata.appliedAt).toLocaleDateString()}</small>
                 </JobDetails>
 
                 {jobdata.status !== 'Accepted' && jobdata.status !== 'Rejected' && (
                   <ButtonContainer>
                     <AcceptButton onClick={() => handleAccept(jobGroup._id, jobGroup.userId, jobdata._id)}>Accept</AcceptButton>
                     <RejectButton onClick={() => handleReject(jobGroup._id, jobGroup.userId, jobdata._id)}>Reject</RejectButton>
+                    <ViewCVButton onClick={() => handleViewCV(jobGroup.userId)}>View CV</ViewCVButton>
                   </ButtonContainer>
                 )}
-
               </JobCard>
             ))
           )
@@ -127,10 +133,6 @@ export default function AdminAppliedJobs() {
       </Container>
     </Background>
   );
-
-
-
-
 }
 
 // Styled components for styling job cards
@@ -233,6 +235,20 @@ const RejectButton = styled.button`
   flex: 1;
   &:hover {
     background-color: #c82333;
+  }
+`;
+
+const ViewCVButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  flex: 1;
+  &:hover {
+    background-color: #0056b3;
   }
 `;
 
