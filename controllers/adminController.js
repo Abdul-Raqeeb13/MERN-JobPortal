@@ -167,10 +167,10 @@ exports.adminRejectJobs = async (req, res) => {
         // console.log("aaaaaa" , jobId, JobDetails);
         const getUser = await findUserById(userid)
         const JobData = await getJob(JobDetails)
-        console.log(getUser.name);
+        // console.log(getUser.name);
         
         const updatedJob = await updateRejectJobStatus(jobId, JobDetails, getUser.name, getUser.email, JobData.title);
-        console.log(updatedJob);
+        // console.log(updatedJob);
         res.status(200).json({
             success: true,
             message: "Job status updated to rejected",

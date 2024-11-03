@@ -4,6 +4,7 @@ const {sendMail} = require('../Utilities/sendMail')
 
 const appliedJobsSchema = new mongoose.Schema({
   userId: { type: String, required: true, unique: true },  // Unique user ID
+  useremail: { type: String, required: true },  // Add useremail here
   jobs: [{ 
     type: Object,
     required: true
@@ -21,21 +22,26 @@ exports.findUser = (userId) => AppliedJobs.findOne({ userId });
 exports.getall = () => AppliedJobs.find();
 
 // Update user jobs array by pushing the entire job object
-exports.updateUserJobs = (userId,useremail, jobdata) => {
-    return AppliedJobs.updateOne(
-        { userId },
-        { $push: { jobs: jobdata } }  // Use $push to append the full job object to the jobs array
-    );
+exports.updateUserJobs = (userId, useremail, jobdata) => {
+  return AppliedJobs.updateOne(
+      { userId },
+      {
+          $set: { useremail },  // Set or update the useremail field
+          $push: { jobs: jobdata }  // Append the job data to the jobs array
+      }
+  );
 };
 
 // Create a new user with the full job object
-exports.createUserWithJob = (userId,useremail, jobdata) => {
-    const newUser = new AppliedJobs({
-        userId,
-        jobs: [jobdata]  // Add the first full job object to the array
-    });
-    return newUser.save();
+exports.createUserWithJob = (userId, useremail, jobdata) => {
+  const newUser = new AppliedJobs({
+      userId,
+      useremail,  // Store useremail here
+      jobs: [jobdata]  // Initialize with the first job object in the array
+  });
+  return newUser.save();
 };
+
 
 
 exports.updateAcceptJobStatus = async (parentId, jobId, username, useremail, jobtitle) => {

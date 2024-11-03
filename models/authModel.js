@@ -20,6 +20,7 @@
             require:true,
             enum : ['user', 'admin']
         },
+        
 
     //     profileImage: {
     //         type: String, // Usually you store the path or URL of the image
