@@ -69,7 +69,7 @@ function MyNavbar() {
             formData.append('name', userData.name);
             formData.append('usertype', userData.usertype);
             if (userData.file) {
-                formData.append('UserCV', userData.file); // Change here to match the backend
+                formData.append('UserCV', userData.file);
             }
             return formData;
         }
@@ -78,7 +78,7 @@ function MyNavbar() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const dataToSend = buildDataToSend();
-
+    
         try {
             const response = await axios({
                 method: "POST",
@@ -88,48 +88,46 @@ function MyNavbar() {
                 },
                 data: showForm ? JSON.stringify(dataToSend) : dataToSend
             });
-
+    
+            console.log("Response:", response.data); // Log response for debugging
+    
             if (response.data.token) {
                 const { usertype, _id: userId } = response.data.data;
-                toast.success("Login success", {
-                    position: "top-center",
-                    autoClose: 2000,
-                    theme: "dark",
-                });
                 localStorage.setItem("Token", response.data.token);
                 localStorage.setItem("UserID", userId);
+    
+                toast.success("Login success", { /* toast options */ });
                 setTimeout(() => {
                     handleClose();
-                    usertype === 'user' ? login() : adminLogin();
+                    usertype === 'user' ? login() : adminLogin(); // Update auth context state
                     nav(usertype === 'user' ? '/' : '/admin', { replace: true });
                 }, 2000);
             } else if (response.data.message === "Signup successful!") {
-                toast.success("Account created successfully!", {
-                    position: "top-center",
-                    autoClose: 2000,
-                    theme: "dark",
-                });
+                toast.success("Account created successfully!", { /* toast options */ });
                 setTimeout(() => {
                     resetForm();
                     setShowForm(true);
-                }, 2500);
+                }, 2100);
             } else {
                 setMessage("Something went wrong, please try again.");
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Something went wrong", {
-                position: "top-center",
-                autoClose: 2000,
-                theme: "dark",
-            });
+            console.error("Error during submit:", error); // Log error for debugging
+            toast.error(error.response?.data?.message || "Something went wrong", { /* toast options */ });
             setMessage(error.response?.data?.message || "Something went wrong");
         }
     };
-
+    
+    
     const handleLogout = () => {
+        toast.dismiss(); // Dismiss previous toasts
         toast.success("Logout success", {
             position: "top-center",
             autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
             theme: "dark",
         });
         setTimeout(() => {
@@ -138,12 +136,13 @@ function MyNavbar() {
             nav('/');
         }, 2000);
     };
+    
 
     return (
         <>
             <ToastContainer />
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
+            <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
+            <Modal.Header closeButton>
                     <Modal.Title>{showForm ? "Login" : "SignUp"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -155,20 +154,20 @@ function MyNavbar() {
                         <TextField id="email" label="Email" variant="outlined" name="email" value={userData.email} onChange={handleInputChange} className="custom-modal-input" />
                         <TextField id="password" label="Password" variant="outlined" name="password" value={userData.password} onChange={handleInputChange} className="custom-modal-input" />
                         {!showForm && (
-                            <input
-                                type="file"
-                                accept="application/pdf"
-                                required
-                                name='UserCV' // Ensure this matches the backend
-                                onChange={handleFileChange}
-                            />
+                          <input
+                          type="file"
+                          accept=".pdf, application/pdf" // Accepts both the .pdf extension and the PDF MIME type
+                          required
+                          name="UserCV"
+                          onChange={handleFileChange}
+                          style={{ marginTop: '10px' }}
+                      />
                         )}
-                        <Button variant="contained" type="submit" className="custom-modal-btn">{showForm ? "Login" : "Create Account"}</Button>
-                        <p>
-                            {showForm ? "Don't have an account?" : "Already have an account?"}
-                            <Link onClick={() => setShowForm(!showForm)}>
-                                {showForm ? "SignUp" : "Login"}
-                            </Link>
+                        <Button variant="contained" type="submit" className="custom-modal-btn">
+                            {showForm ? "Login" : "Create Account"}
+                        </Button>
+                        <p className="custom-modal-link" onClick={() => setShowForm(!showForm)}>
+                            {showForm ? "Don't have an account? SignUp" : "Already have an account? Login"}
                         </p>
                     </form>
                 </Modal.Body>

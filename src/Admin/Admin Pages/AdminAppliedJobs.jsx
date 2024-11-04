@@ -6,32 +6,63 @@ export default function AdminAppliedJobs() {
   const [jobs, setJobs] = useState([]);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchAdminAppliedJobs = async () => {
-      const token = localStorage.getItem('Token');
-      try {
-        const response = await axios({
-          method: "GET",
-          url: `http://localhost:8000/admin/adminappliedjobs`,
-          headers: {
-            'Authorization': `${token}`,
-            'Content-Type': "application/json"
-          },
-        });
+  // useEffect(() => {
+  //   const fetchAdminAppliedJobs = async () => {
+  //     const token = localStorage.getItem('Token');
+  //     try {
+  //       const response = await axios({
+  //         method: "GET",
+  //         url: `http://localhost:8000/admin/adminappliedjobs`,
+  //         headers: {
+  //           'Authorization': `${token}`,
+  //           'Content-Type': "application/json"
+  //         },
+  //       });
 
 
-        if (response.data && response.data.success) {
-          setJobs(response.data.data);
-        } else {
-          setError('No jobs available');
-        }
-      } catch (error) {
-        setError(error.response?.data?.message || "An error occurred while fetching jobs");
-      }
-    };
-    fetchAdminAppliedJobs();
+  //       if (response.data && response.data.success) {
+  //         setJobs(response.data.data);
+  //       } else {
+  //         setError('No jobs available');
+  //       }
+  //     } catch (error) {
+  //       setError(error.response?.data?.message || "An error occurred while fetching jobs");
+  //     }
+  //   };
+  //   fetchAdminAppliedJobs();
+  //   console.log("run");
+    
+  // }, []);
+
+
+  const fetchAdminAppliedJobs = async () => {
     console.log("run");
     
+    const token = localStorage.getItem('Token');
+    try {
+      const response = await axios({
+        method: "GET",
+        url: `http://localhost:8000/admin/adminappliedjobs`,
+        headers: {
+          'Authorization': `${token}`,
+          'Content-Type': "application/json"
+        },
+      });
+
+      if (response.data && response.data.success) {
+        setJobs(response.data.data);
+      } else {
+        setError('No jobs available');
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || "An error occurred while fetching jobs");
+    }
+  };
+
+  // Call fetchAdminAppliedJobs on component mount
+  useEffect(() => {
+    fetchAdminAppliedJobs();
+    console.log("Initial fetch run");
   }, []);
 
   const handleAccept = async (jobId, userid, JobDetails) => {
@@ -57,16 +88,48 @@ export default function AdminAppliedJobs() {
       setJobs(prevJobs => prevJobs.map(job =>
         job._id === jobId ? { ...job, status: 'Accepted' } : job
       ));
+      fetchAdminAppliedJobs()
     } catch (error) {
       setError(error.response?.data?.message || "Failed to accept the job");
     }
   };
 
+  const handleViewCV = async (userid) => {
+    try {
+        const token = localStorage.getItem('Token');
+        
+        if (!token) {
+            console.error("Authorization token is missing.");
+            return;
+        }
 
-  const handleViewCV = (userid) => {
-    console.log(userid);
-    
-  }
+        const response = await axios.get(`http://localhost:8000/admin/adminGetUserCV`, {
+            headers: {
+                'Authorization': token,
+                'Content-Type': "application/json"
+            },
+            params: { userId: userid }
+        });
+
+        if (response.status === 200 && response.data.pdfName) {
+            window.open(`http://localhost:8000/uploads/${response.data.pdfName}`, "_blank", "noreferrer");
+        } else {
+            console.warn("CV not found or the response was incomplete.");
+        }
+    } catch (error) {
+        if (error.response) {
+            // Server responded with a status code outside the 2xx range
+            console.error("Error fetching CV:", error.response.data.message || error.response.statusText);
+        } else if (error.request) {
+            // Request was made, but no response received
+            console.error("No response from server:", error.request);
+        } else {
+            // Something went wrong in setting up the request
+            console.error("Error:", error.message);
+        }
+    }
+};
+
 
 
   const handleReject = async (jobId, userid, JobDetails) => {
@@ -92,6 +155,9 @@ export default function AdminAppliedJobs() {
       setJobs(prevJobs => prevJobs.map(job =>
         job._id === jobId ? { ...job, status: 'Rejected' } : job
       ));
+
+      fetchAdminAppliedJobs()
+
     } catch (error) {
       setError(error.response?.data?.message || "Failed to reject the job");
     }
@@ -102,35 +168,36 @@ export default function AdminAppliedJobs() {
       <Heading>Users Applied Jobs</Heading>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <Container>
-        {jobs.length > 0 ? (
-          jobs.map((jobGroup) =>
+    {jobs.length > 0 ? (
+        jobs.slice(0).reverse().map((jobGroup) => // Reverse the jobs array here
             jobGroup.jobs.map((jobdata) => (
-              <JobCard key={jobdata._id}>
-                <JobTitle>{jobdata.title}</JobTitle>
-                <CompanyName>{jobdata.company}</CompanyName>
-                <JobDetails>
-                  <DetailItem><strong>User Email :  </strong> { jobGroup.useremail}</DetailItem>
-                  <DetailItem><strong>Location :  </strong> {jobdata.location}</DetailItem>
-                  <DetailItem><strong>Experience :  </strong> {jobdata.experience}</DetailItem>
-                  <DetailItem><strong>Salary :  </strong> {jobdata.salary}</DetailItem>
-                  <DetailItem><strong>Status :  </strong> {jobdata.status}</DetailItem>
-                  <small>Applied At : {new Date(jobdata.appliedAt).toLocaleDateString()}</small>
-                </JobDetails>
+                <JobCard key={jobdata._id}>
+                    <JobTitle>{jobdata.title}</JobTitle>
+                    <CompanyName>{jobdata.company}</CompanyName>
+                    <JobDetails>
+                        <DetailItem><strong>User Email: </strong>{jobGroup.useremail}</DetailItem>
+                        <DetailItem><strong>Location: </strong>{jobdata.location}</DetailItem>
+                        <DetailItem><strong>Experience: </strong>{jobdata.experience}</DetailItem>
+                        <DetailItem><strong>Salary: </strong>{jobdata.salary}</DetailItem>
+                        <DetailItem><strong>Status: </strong>{jobdata.status}</DetailItem>
+                        <small>Applied At: {new Date(jobdata.appliedAt).toLocaleDateString()}</small>
+                    </JobDetails>
 
-                {jobdata.status !== 'Accepted' && jobdata.status !== 'Rejected' && (
-                  <ButtonContainer>
-                    <AcceptButton onClick={() => handleAccept(jobGroup._id, jobGroup.userId, jobdata._id)}>Accept</AcceptButton>
-                    <RejectButton onClick={() => handleReject(jobGroup._id, jobGroup.userId, jobdata._id)}>Reject</RejectButton>
-                    <ViewCVButton onClick={() => handleViewCV(jobGroup.userId)}>View CV</ViewCVButton>
-                  </ButtonContainer>
-                )}
-              </JobCard>
+                    {jobdata.status !== 'Accepted' && jobdata.status !== 'Rejected' && (
+                        <ButtonContainer>
+                            <AcceptButton onClick={() => handleAccept(jobGroup._id, jobGroup.userId, jobdata._id)}>Accept</AcceptButton>
+                            <RejectButton onClick={() => handleReject(jobGroup._id, jobGroup.userId, jobdata._id)}>Reject</RejectButton>
+                            <ViewCVButton onClick={() => handleViewCV(jobGroup.userId)}>View CV</ViewCVButton>
+                        </ButtonContainer>
+                    )}
+                </JobCard>
             ))
-          )
-        ) : (
-          !error && <NoJobsMessage>No jobs available</NoJobsMessage>
-        )}
-      </Container>
+        )
+    ) : (
+        !error && <NoJobsMessage>No jobs available</NoJobsMessage>
+    )}
+</Container>
+
     </Background>
   );
 }

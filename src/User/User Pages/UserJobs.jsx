@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 
 const PageWrapper = styled.div`
   min-height: 100vh;
-  background-color: 	 #000000; /* Full-page dark background */
+  background-color: #000000; /* Full-page dark background */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,7 +21,7 @@ const Container = styled.div`
 `;
 
 const JobCard = styled.div`
-  background: linear-gradient(135deg, #333333 50%, #FFA500 50%);
+  background: linear-gradient(135deg, #333333 50%, #555555 50%); /* Darker gradient for more black */
   border-radius: 15px;
   padding: 25px;
   width: 350px;
@@ -42,7 +42,7 @@ const JobCard = styled.div`
     position: absolute;
     width: 100%;
     height: 10px;
-    background: #FFA500;
+    background: #333333; /* Change to match the card color */
   }
 
   &::before {
@@ -57,7 +57,7 @@ const JobCard = styled.div`
 const JobTitle = styled.h3`
   margin: 0;
   font-size: 1.5rem;
-  color: #FFA500;
+  color: #FFD700; /* Keep gold for visibility */
 `;
 
 const CompanyName = styled.p`
@@ -73,7 +73,7 @@ const JobDetails = styled.p`
 `;
 
 const ApplyButton = styled.button`
-  background-color: #FFA500;
+  background: #FFD700; /* Keep this gold for contrast */
   color: black;
   border: none;
   padding: 10px 15px;
@@ -82,10 +82,10 @@ const ApplyButton = styled.button`
   font-size: 1rem;
   width: 100%;
   margin-top: 15px;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
 
   &:hover {
-    background-color: #FF8C00;
+    background: #FFC107; /* Slightly darker yellow on hover */
   }
 `;
 
@@ -118,7 +118,13 @@ const UserJobs = () => {
       }
     };
 
-    fetchJobs();
+    fetchJobs(); // Fetch jobs on initial render
+
+    const intervalId = setInterval(() => {
+      fetchJobs(); // Fetch jobs periodically
+    }, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(intervalId); // Clean up the interval on component unmount
   }, []);
 
   const handleApply = async (jobId) => {
@@ -184,7 +190,7 @@ const UserJobs = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <Container>
         {jobs.length > 0 ? (
-          jobs.map(job => (
+          [...jobs].reverse().map(job => (  // Create a copy of jobs and reverse it
             <JobCard key={job._id}>
               <JobTitle>{job.title}</JobTitle>
               <CompanyName>{job.company}</CompanyName>

@@ -4,47 +4,54 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row; /* Stack items vertically */
   justify-content: center;
+  flex-wrap: wrap;
   gap: 20px;
-  padding: 10px;
-  background-color: #f8f9fa;
+  padding: 20px;
+  background-color: #000;
+  min-height: 100vh;
 `;
 
 const JobCard = styled.div`
-  background: linear-gradient(135deg, #6DD5FA, #FFFFFF);
+  background: linear-gradient(135deg, #333, #ffdd57);
   border-radius: 15px;
   padding: 20px;
-  width: 300px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width:285px;
+  height: 300px; /* Fixed height to prevent full height expansion */
+  box-shadow: 0 6px 12px rgba(255, 223, 0, 0.3);
   transition: transform 0.3s ease-in-out;
+  color: #fff;
+  overflow: hidden; /* Hide overflow if you want to cut off excess content */
+  border: 1px solid #ffdd57;
 
   &:hover {
     transform: translateY(-10px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 12px 24px rgba(255, 223, 0, 0.5);
   }
 `;
+
 
 const JobTitle = styled.h3`
   margin: 0;
   font-size: 1.5rem;
-  color: #007BFF;
+  color: #ffdd57;
 `;
 
 const CompanyName = styled.p`
   font-size: 1rem;
-  color: #555;
+  color: #cccccc;
   margin: 10px 0;
 `;
 
 const JobDetails = styled.p`
   font-size: 0.9rem;
-  color: #333;
+  color: #e6e6e6;
   line-height: 1.6;
 `;
 
 const DeleteButton = styled.button`
-  background-color: #dc3545;
+  background-color: #ff4d4f;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -56,8 +63,16 @@ const DeleteButton = styled.button`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #c82333;
+    background-color: #ff1a1c;
   }
+`;
+
+const Heading = styled.h1`
+  color: #ffdd57;
+  text-align: center;
+  background-color: #000;
+  padding: 20px;
+  margin: 0;
 `;
 
 const AdminViewJobs = () => {
@@ -79,7 +94,7 @@ const AdminViewJobs = () => {
         });
 
         if (response.data && response.data.success) {
-          setJobs(response.data.data); // Assuming the jobs are returned in `data`
+          setJobs(response.data.data);
         } else {
           setError('Jobs not found');
         }
@@ -97,7 +112,7 @@ const AdminViewJobs = () => {
     try {
       const response = await axios({
         method: "DELETE",
-        url: `http://localhost:8000/admin/admindeletejobs/?id=${jobId}`, // Send ID as a query parameter
+        url: `http://localhost:8000/admin/admindeletejobs/?id=${jobId}`,
         headers: {
           'Authorization': `${token}`,
           'Content-Type': "application/json"
@@ -105,8 +120,7 @@ const AdminViewJobs = () => {
       });
   
       if (response.data.success) {
-        // Filter out the deleted job from the state
-        setJobs(prevJobs => prevJobs.filter(job => job._id !== jobId)); // Ensure you're comparing the correct field (`_id`)
+        setJobs(prevJobs => prevJobs.filter(job => job._id !== jobId));
       } else {
         setError('Failed to delete job');
       }
@@ -115,17 +129,15 @@ const AdminViewJobs = () => {
       setError('An error occurred while deleting');
     }
   };
-  
-
 
   return (
     <>
-      <h1>Admin View Jobs</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <Heading>Admin View Jobs</Heading>
+      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
       <Container>
         {jobs.length > 0 ? (
-          jobs.map(job => (
-            <JobCard key={job.id}>
+          jobs.slice(0).reverse().map(job => (
+            <JobCard key={job._id}>
               <JobTitle>{job.title}</JobTitle>
               <CompanyName>{job.company}</CompanyName>
               <JobDetails>
@@ -137,7 +149,7 @@ const AdminViewJobs = () => {
             </JobCard>
           ))
         ) : (
-          <p>No jobs available</p>
+          <p style={{ color: '#fff' }}>No jobs available</p>
         )}
       </Container>
     </>

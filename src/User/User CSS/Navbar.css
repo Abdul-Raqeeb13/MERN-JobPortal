@@ -38,3 +38,44 @@
 .active {
     color: #FFC107 !important; /* Highlight color */
 }
+
+
+
+
+
+
+
+
+
+/* modal styling */
+/* Navbar.css */
+.custom-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    padding: 10px;
+}
+
+.custom-modal-input {
+    width: 100%;
+}
+
+.custom-modal-btn {
+    width: 100%;
+    padding: 10px 0;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.custom-modal-link {
+    margin-top: 15px;
+    text-align: center;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.custom-modal-link:hover {
+    text-decoration: underline;
+}

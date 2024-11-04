@@ -31,8 +31,14 @@ export default function UserAppliedJobs() {
       }
     };
 
+    // Fetch data initially
     fetchUserAppliedJobs();
-    
+
+    // Set up polling interval to fetch updated job data every 10 seconds
+    const intervalId = setInterval(fetchUserAppliedJobs, 10000); // Adjust interval as needed
+
+    // Clear interval when component unmounts
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -40,32 +46,32 @@ export default function UserAppliedJobs() {
       <Heading>Your Applied Jobs</Heading>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <Container>
-        {jobs.length > 0 ? (
-          jobs.map(job => (
-            <JobCard key={job._id}>
-              <JobTitle>{job.title}</JobTitle>
-              <CompanyName>{job.company}</CompanyName>
-              <JobDetails>
-                <DetailItem><strong>Location : </strong> {job.location}</DetailItem>
-                <DetailItem><strong>Experience : </strong> {job.experience}</DetailItem>
-                <DetailItem><strong>Salary : </strong> {job.salary}</DetailItem>
-                <DetailItem><strong>Status : </strong> {job.status}</DetailItem>
-                <small>Applied At : {new Date(job.appliedAt).toLocaleDateString()}</small>
-              </JobDetails>
-            </JobCard>
-          ))
-        ) : (
-          !error && <NoJobsMessage>No jobs available</NoJobsMessage>
-        )}
-      </Container>
+  {jobs.length > 0 ? (
+    [...jobs].reverse().map(job => (  // Create a copy of jobs and reverse it
+      <JobCard key={job._id}>
+        <JobTitle>{job.title}</JobTitle>
+        <CompanyName>{job.company}</CompanyName>
+        <JobDetails>
+          <DetailItem><strong>Location : </strong> {job.location}</DetailItem>
+          <DetailItem><strong>Experience : </strong> {job.experience}</DetailItem>
+          <DetailItem><strong>Salary : </strong> {job.salary}</DetailItem>
+          <DetailItem><strong>Status : </strong> {job.status}</DetailItem>
+          <small>Applied At : {new Date(job.appliedAt).toLocaleDateString()}</small>
+        </JobDetails>
+      </JobCard>
+    ))
+  ) : (
+    !error && <NoJobsMessage>No jobs available</NoJobsMessage>
+  )}
+</Container>
+
     </Background>
   );
 }
 
 // Styled components for styling job cards
-
 const Background = styled.div`
-  background-color: #000000; /* Black background */
+  background-color: #000000;
   min-height: 100vh;
   padding: 20px;
 `;
@@ -73,13 +79,13 @@ const Background = styled.div`
 const Heading = styled.h1`
   text-align: center;
   margin: 20px 0;
-  color: #FFD700; /* Gold color for the heading */
+  color: #FFD700;
   font-size: 2.5rem;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 `;
 
 const ErrorMessage = styled.p`
-  color: #FF6347; /* Light red for error message */
+  color: #FF6347;
   text-align: center;
   font-weight: bold;
 `;
@@ -92,8 +98,8 @@ const Container = styled.div`
 `;
 
 const JobCard = styled.div`
-  background-color: #1A1A1A; /* Dark gray background */
-  border: 1px solid #FFD700; /* Gold border */
+  background-color: #1A1A1A;
+  border: 1px solid #FFD700;
   border-radius: 8px;
   padding: 20px;
   width: 45%;
@@ -105,39 +111,23 @@ const JobCard = styled.div`
   justify-content: space-between;
   position: relative;
   overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, transparent 50%, #FFD700 50%);
-    opacity: 0.05; /* Thin gold accent line */
-  }
-
-  &:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-  }
 `;
 
 const JobTitle = styled.h3`
   font-size: 1.5rem;
-  color: #FFD700; /* Gold color for title */
+  color: #FFD700;
   margin-bottom: 5px;
 `;
 
 const CompanyName = styled.h4`
   font-size: 1.1rem;
-  color: #CCCCCC; /* Light gray for company name */
+  color: #CCCCCC;
   margin-bottom: 15px;
 `;
 
 const JobDetails = styled.div`
   font-size: 0.9rem;
-  color: #E0E0E0; /* Light gray for details */
+  color: #E0E0E0;
   line-height: 1.6;
 `;
 
@@ -146,7 +136,7 @@ const DetailItem = styled.p`
   display: flex;
   align-items: center;
   font-size: 0.9rem;
-  color: #E0E0E0; /* Light gray color for individual detail items */
+  color: #E0E0E0;
 `;
 
 const NoJobsMessage = styled.p`
