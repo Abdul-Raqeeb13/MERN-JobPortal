@@ -43,16 +43,12 @@ exports.createUserWithJob = (userId, useremail, jobdata) => {
 };
 
 
-
 exports.updateAcceptJobStatus = async (parentId, jobId, username, useremail, jobtitle) => {
   try {
     // Convert IDs to ObjectId instances with 'new'
     const parentObjectId = new mongoose.Types.ObjectId(parentId);
     const jobObjectId = new mongoose.Types.ObjectId(jobId);
 
-    // console.log("Parent ID:", parentObjectId);
-    // console.log("Job ID:", jobObjectId);
-    
     const result = await AppliedJobs.updateOne(
       {
         _id: parentObjectId, // Main ID
@@ -76,16 +72,12 @@ exports.updateAcceptJobStatus = async (parentId, jobId, username, useremail, job
 };
 
 
-
 exports.updateRejectJobStatus = async (parentId, jobId, username, useremail, jobtitle) => {
   try {
 
     // Convert IDs to ObjectId instances with 'new'
     const parentObjectId = new mongoose.Types.ObjectId(parentId);
     const jobObjectId = new mongoose.Types.ObjectId(jobId);
-
-    // console.log("Parent ID:", parentObjectId);
-    // console.log("Job ID:", jobObjectId);
     
     const result = await AppliedJobs.updateOne(
       {

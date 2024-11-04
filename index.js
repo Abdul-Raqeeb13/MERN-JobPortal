@@ -20,7 +20,7 @@ db.on("error",()=>{
 
 })
 
-
+app.use("/uploads", express.static("uploads"))
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())

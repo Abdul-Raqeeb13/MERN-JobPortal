@@ -2,6 +2,8 @@ const adminAddJobFormValidator = require("../validators/adminAddJobValidator");
 const { postJob, getAllJobs, deleteJobs,getJob } = require('../models/adminModel');
 const { getall, updateAcceptJobStatus, updateRejectJobStatus } = require('../models/userModel')
 const {findUserById} = require('../models/authModel')
+const PdfDetails = require('../models/pdfModel'); // Adjust the path based on your directory structure
+
 
 exports.adminAddJobs = (async (req, res) => { 
     try {
@@ -112,26 +114,6 @@ exports.adminAppliedJobs = async (req, res) => {
 };
 
 
-// exports.adminAcceptJobs = async (req, res) => {
-//     try {
-
-//         // console.log(req.body.jobId);
-        
-//         const updatestatus = await updateJobStatus(req.body.jobId, req.body.JobDetails)
-//         console.log(req.body.jobId, req.body.JobDetails);
-        
-
-//     } catch (error) {
-//         console.error("Error fetching applied jobs:", error);
-
-//         // Send error response to the frontend
-//         res.status(500).json({
-//             success: false,
-//             message: "Failed to Update status"
-//         });
-//     }
-// }
-
 exports.adminAcceptJobs = async (req, res) => {
     try {
         const { jobId, JobDetails, userid } = req.body;
@@ -160,7 +142,6 @@ exports.adminAcceptJobs = async (req, res) => {
 };
 
 
-
 exports.adminRejectJobs = async (req, res) => {
     try {
         const { jobId, JobDetails, userid } = req.body;
@@ -185,3 +166,24 @@ exports.adminRejectJobs = async (req, res) => {
         });
     }
 };
+
+
+exports.adminGetUserCV = async (req, res) => {
+    try {
+        const { userId } = req.query; // Change this to req.query to get the userId from query parameters
+        
+        // Find the PDF details for the specified user ID
+        const pdfDetails = await PdfDetails.findOne({ userId: userId });
+
+        if (!pdfDetails) {
+            return res.status(404).json({ message: "PDF not found" });
+        }
+
+        // Respond with the PDF name
+        res.status(200).json({ pdfName: pdfDetails.pdf });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+

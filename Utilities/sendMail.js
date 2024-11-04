@@ -3,13 +3,6 @@ require('dotenv').config()
 
 
 exports.sendMail = (username, email, jobtitle, jobstatus) => {
-    // console.log(process.env.smtpemail);
-    // console.log(process.env.smtppasskey);
-    // console.log(username);
-    // console.log(email);
-    // console.log(jobtitle);
-    // console.log(jobstatus);
-    
     
     const transporter = nodemailer.createTransport({
     service: "gmail",

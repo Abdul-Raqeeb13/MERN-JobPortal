@@ -15,13 +15,6 @@ const loginValidator = joi.object({
         'string.min': "password must be at least 3 characters",
         'any.required': "password is required"
     }),
-
-    // usertype: joi.string().valid('user', 'admin').default('user').required().messages({
-    //     'string.base': "Usertype must be a string",
-    //     'string.empty': "Usertype cannot be empty",
-    //     'any.required': "Usertype is required",
-    //     'any.only': "Usertype must be either 'user' or 'admin'"
-    //   }),
 })
 
 module.exports = loginValidator

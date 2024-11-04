@@ -64,67 +64,7 @@ exports.signup = async (req, res) => {
 };
 
 
-
-// exports.login = async (req, res) => {
-
-//     // try {
-//         const {error , value} = loginValidator.validate(req.body);
-//         if (error) {
-//             res.status(400).send({
-//                 message: error.details[0].message
-//               });
-//         }
-
-//         else{  
-//             const {email , password} = req.body
-//             const findUserData = await findUser({email:email})
-            
-//             if(findUserData){
-//                 const checkPassword = await bcrypt.compare(password, findUserData.password)
-//                 console.log(checkPassword);
-//                 if(checkPassword){
-//                     // console.log(findUserData._id);
-//                     // console.log(process.env.SECRET_KEY);
-                    
-//                     const token = JWT.sign({_id : findUserData._id}, process.env.SECRET_KEY, {expiresIn : '2h'})
-//                     res.send({
-//                         message:"Login Success",
-//                         data:findUserData,
-//                         token
-//                     })
-
-
-//                     // res.status(200).send({
-//                     //     message: "Login Success"
-//                     // });
-//                 }
-//                 else{
-//                     res.status(400).send({
-//                         message: " Password"
-//                     });
-//                 }
-                
-//             }
-//             else{
-//                 res.send({
-//                     message: "User Not Found"
-//                 })
-//             }
-            
-
-            
-//         }
-//     // } catch (error) {
-//     //     res.send({
-//     //         message : error
-//     //     })
-//     // }Invalid
-
-// }
-
-
 exports.login = async (req, res) => {
-    // console.log(req.body);
     
     const {error , value} = loginValidator.validate(req.body);
     if (error) {
